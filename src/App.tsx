@@ -9,7 +9,6 @@ import UsersPage from './pages/UsersPage';
 import ContentPage from './pages/ContentPage';
 import SettingsPage from './pages/SettingsPage';
 import TasksPage from './pages/TasksPage';
-import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -21,11 +20,7 @@ function App() {
             <Routes>
               <Route
                 path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
+                element={<Dashboard />}
               >
                 <Route index element={<DashboardHome />} />
                 <Route path="users" element={<UsersPage />} />

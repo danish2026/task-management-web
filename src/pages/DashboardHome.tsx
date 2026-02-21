@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ClipboardList, CheckCircle, Clock, AlertTriangle, TrendingUp } from 'lucide-react';
+import { ClipboardList, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 interface Task {
@@ -81,7 +81,7 @@ export default function DashboardHome() {
   ];
 
   return (
-    <div className="p-8">
+    <div className={`min-h-screen p-8 ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-100 text-gray-900'}`}>
       <div className="mb-8">
         <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Dashboard Overview</h1>
         <p className={`mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Welcome back! Here's what's happening today.</p>
