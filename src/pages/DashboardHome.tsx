@@ -1,16 +1,84 @@
-import { Users, FileText, TrendingUp, Activity } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ClipboardList, CheckCircle, Clock, AlertTriangle, TrendingUp } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
-const stats = [
-  { icon: Users, label: 'Total Users', value: '1,234', change: '+12%', color: 'bg-blue-500' },
-  { icon: FileText, label: 'Total Content', value: '856', change: '+8%', color: 'bg-green-500' },
-  { icon: TrendingUp, label: 'Growth', value: '23%', change: '+5%', color: 'bg-orange-500' },
-  { icon: Activity, label: 'Active Now', value: '89', change: '+3%', color: 'bg-purple-500' },
-];
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  status: 'Pending' | 'Completed';
+  priority: 'Low' | 'Medium' | 'High';
+  dueDate: string;
+  createdAt: string;
+}
+
+function loadFromStorage<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function formatDate(iso: string) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function getTimeAgo(iso: string): string {
+  const date = new Date(iso);
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  
+  if (seconds < 60) return 'just now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+  return formatDate(iso);
+}
 
 export default function DashboardHome() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    const loadedTasks = loadFromStorage<Task[]>('task_mgmt_tasks', []);
+    setTasks(loadedTasks);
+  }, []);
+
+  const stats = [
+    {
+      icon: ClipboardList,
+      label: 'Total Tasks',
+      value: tasks.length.toString(),
+      change: '+0%',
+      color: 'bg-blue-500',
+    },
+    {
+      icon: CheckCircle,
+      label: 'Completed',
+      value: tasks.filter(t => t.status === 'Completed').length.toString(),
+      change: '+0%',
+      color: 'bg-emerald-500',
+    },
+    {
+      icon: Clock,
+      label: 'Pending',
+      value: tasks.filter(t => t.status === 'Pending').length.toString(),
+      change: '+0%',
+      color: 'bg-orange-500',
+    },
+    {
+      icon: AlertTriangle,
+      label: 'High Priority',
+      value: tasks.filter(t => t.priority === 'High').length.toString(),
+      change: '+0%',
+      color: 'bg-red-500',
+    },
+  ];
 
   return (
     <div className="p-8">
@@ -41,38 +109,58 @@ export default function DashboardHome() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className={`rounded-xl shadow-sm p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
-          <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Recent Activity</h2>
+          <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Recent Tasks</h2>
           <div className="space-y-4">
-            {[
-              { action: 'New user registered', time: '5 minutes ago' },
-              { action: 'Content published', time: '12 minutes ago' },
-              { action: 'Settings updated', time: '1 hour ago' },
-              { action: 'Report generated', time: '2 hours ago' },
-            ].map((activity, index) => (
-              <div key={index} className={`flex items-center justify-between py-3 border-b last:border-0 ${isDark ? 'border-gray-700 text-gray-300' : 'border-gray-100 text-gray-700'}`}>
-                <span>{activity.action}</span>
-                <span className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{activity.time}</span>
-              </div>
-            ))}
+            {tasks.length === 0 ? (
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>No tasks yet. Create your first task to get started.</p>
+            ) : (
+              tasks
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .slice(0, 4)
+                .map((task, index) => (
+                  <div key={task.id} className={`flex items-start justify-between py-3 border-b last:border-0 gap-3 ${isDark ? 'border-gray-700' : 'border-gray-100'}`}>
+                    <div className="flex-1 min-w-0">
+                      <p className={`font-medium text-sm truncate ${task.status === 'Completed' ? (isDark ? 'text-gray-500 line-through' : 'text-gray-400 line-through') : (isDark ? 'text-gray-100' : 'text-gray-900')}`}>
+                        {task.title}
+                      </p>
+                      <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{getTimeAgo(task.createdAt)}</p>
+                    </div>
+                    <span className={`text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap ${
+                      task.status === 'Completed'
+                        ? (isDark ? 'bg-emerald-900 text-emerald-200' : 'bg-emerald-100 text-emerald-700')
+                        : (isDark ? 'bg-orange-900 text-orange-200' : 'bg-orange-100 text-orange-700')
+                    }`}>
+                      {task.status}
+                    </span>
+                  </div>
+                ))
+            )}
           </div>
         </div>
 
         <div className={`rounded-xl shadow-sm p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
-          <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: 'Add User', color: 'bg-blue-600' },
-              { label: 'Create Content', color: 'bg-green-600' },
-              { label: 'View Reports', color: 'bg-orange-600' },
-              { label: 'System Settings', color: 'bg-purple-600' },
-            ].map((action, index) => (
-              <button
-                key={index}
-                className={`${action.color} text-white py-4 px-4 rounded-lg hover:opacity-90 transition-opacity font-medium`}
-              >
-                {action.label}
-              </button>
-            ))}
+          <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Task Summary</h2>
+          <div className="space-y-3">
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-blue-50'} flex items-center justify-between`}>
+              <span className={`text-sm font-medium ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>Completion Rate</span>
+              <span className={`text-lg font-bold ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>
+                {tasks.length > 0
+                  ? `${Math.round((tasks.filter(t => t.status === 'Completed').length / tasks.length) * 100)}%`
+                  : '0%'}
+              </span>
+            </div>
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-orange-50'} flex items-center justify-between`}>
+              <span className={`text-sm font-medium ${isDark ? 'text-orange-300' : 'text-orange-700'}`}>Pending Tasks</span>
+              <span className={`text-lg font-bold ${isDark ? 'text-orange-300' : 'text-orange-600'}`}>
+                {tasks.filter(t => t.status === 'Pending').length}
+              </span>
+            </div>
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-red-50'} flex items-center justify-between`}>
+              <span className={`text-sm font-medium ${isDark ? 'text-red-300' : 'text-red-700'}`}>High Priority</span>
+              <span className={`text-lg font-bold ${isDark ? 'text-red-300' : 'text-red-600'}`}>
+                {tasks.filter(t => t.priority === 'High').length}
+              </span>
+            </div>
           </div>
         </div>
       </div>
