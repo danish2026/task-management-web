@@ -119,9 +119,7 @@ export default function TasksPage() {
   const [editError, setEditError] = useState('');
   const nextId = useRef(2000);
 
-  // ── Initial API fetch ──────────────────────────────────────────────────────
   useEffect(() => {
-    // Only fetch if no persisted tasks
     if (tasks.length === 0) {
       setLoading(true);
       setApiError('');
@@ -151,12 +149,9 @@ export default function TasksPage() {
         })
         .finally(() => setLoading(false));
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Persist tasks ──────────────────────────────────────────────────────────
+  }, []); 
   useEffect(() => { saveToStorage(STORAGE_KEY, tasks); }, [tasks]);
 
-  // ── Debounced search ───────────────────────────────────────────────────────
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleSearchChange = useCallback((val: string) => {
     setSearchRaw(val);
@@ -164,7 +159,6 @@ export default function TasksPage() {
     debounceRef.current = setTimeout(() => setSearch(val), 300);
   }, []);
 
-  // ── Derived data ───────────────────────────────────────────────────────────
   const filtered = tasks
     .filter(t => filter === 'All' || t.status === filter)
     .filter(t => !search || t.title.toLowerCase().includes(search.toLowerCase()))
@@ -185,7 +179,6 @@ export default function TasksPage() {
     high: tasks.filter(t => t.priority === 'High').length,
   };
 
-  // ── Actions ────────────────────────────────────────────────────────────────
   const markComplete = (id: number) =>
     setTasks(prev => prev.map(t => t.id === id ? { ...t, status: 'Completed' } : t));
 
@@ -228,7 +221,6 @@ export default function TasksPage() {
     else { setSort(col); setSortDir('desc'); }
   };
 
-  // ── Theme classes ──────────────────────────────────────────────────────────
   const bg = dark ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900';
   const card = dark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
   const inputCls = dark
@@ -238,7 +230,6 @@ export default function TasksPage() {
   const tableTd = dark ? 'border-gray-700 text-gray-200' : 'border-gray-100 text-gray-700';
   const rowHover = dark ? 'hover:bg-gray-750' : 'hover:bg-gray-50';
 
-  // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className={`min-h-screen p-4 md:p-8 ${bg} transition-colors duration-200`}>
 
@@ -262,7 +253,6 @@ export default function TasksPage() {
         </div>
       </div>
 
-      {/* ── Loading / Error ── */}
       {loading && (
         <div className="flex items-center justify-center py-16">
           <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -279,7 +269,6 @@ export default function TasksPage() {
 
       {!loading && (
         <>
-          {/* ── Stats Bar ── */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             {[
               { label: 'Total Tasks', value: stats.total, color: 'text-blue-500', bg: dark ? 'bg-emerald-900/30' : 'bg-blue-50' },
@@ -294,7 +283,6 @@ export default function TasksPage() {
             ))}
           </div>
 
-          {/* ── Add Task Form ── */}
           {showForm && (
             <div className={`${card} border rounded-xl p-5 mb-6 shadow-sm`}>
               <div className="flex items-center justify-between mb-4">
@@ -365,9 +353,7 @@ export default function TasksPage() {
             </div>
           )}
 
-          {/* ── Search + Filter + Sort ── */}
           <div className={`${card} border rounded-xl p-4 mb-4 flex flex-col md:flex-row gap-3 items-start md:items-center`}>
-            {/* Search */}
             <div className="relative flex-1 w-full">
               <Search className={`absolute left-3 top-2.5 w-4 h-4 ${dark ? 'text-gray-400' : 'text-gray-400'}`} />
               <input
@@ -378,7 +364,6 @@ export default function TasksPage() {
               />
             </div>
 
-            {/* Filter */}
             <div className="flex gap-1.5">
               {(['All', 'Completed', 'Pending'] as FilterType[]).map(f => (
                 <button
@@ -505,7 +490,6 @@ export default function TasksPage() {
         </>
       )}
 
-      {/* ── Edit Modal ── */}
       {editTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className={`${dark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} rounded-2xl shadow-2xl w-full max-w-md`}>
