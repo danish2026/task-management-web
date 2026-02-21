@@ -22,9 +22,9 @@ ApiClient.interceptors.response.use(
 	(error) => {
 		if (error.response?.status === 401) {
 			localStorage.removeItem('token')
-			// Optional: navigate to login page
+			// Optional: navigate to dashboard on auth error
 			try {
-				window.location.href = '/login'
+				window.location.href = '/dashboard'
 			} catch (e) {
 				// ignore in non-browser environments
 			}

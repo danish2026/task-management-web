@@ -3,7 +3,6 @@ import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastContainer } from './components/ToastContainer';
-import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import DashboardHome from './pages/DashboardHome';
 import UsersPage from './pages/UsersPage';
@@ -20,7 +19,6 @@ function App() {
           <BrowserRouter>
             <ToastContainer />
             <Routes>
-              <Route path="/login" element={<Login />} />
               <Route
                 path="/dashboard"
                 element={
@@ -35,8 +33,8 @@ function App() {
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="tasks" element={<TasksPage />} />
               </Route>
-              <Route path="/" element={<Navigate to="/login" replace />} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </BrowserRouter>
         </ToastProvider>
