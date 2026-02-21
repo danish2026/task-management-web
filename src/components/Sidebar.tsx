@@ -1,19 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users, Settings, FileText, LogOut, Menu, ClipboardList } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { LayoutDashboard, LogOut, Menu, ClipboardList, Sun, Moon } from 'lucide-react';
 import { useState } from 'react';
 
 const menuItems = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/dashboard/users', icon: Users, label: 'Users' },
-  { path: '/dashboard/content', icon: FileText, label: 'Content' },
   { path: '/dashboard/tasks', icon: ClipboardList, label: 'Tasks' },
-  { path: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ];
 
 export default function Sidebar() {
   const location = useLocation();
   const { logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -32,12 +31,16 @@ export default function Sidebar() {
       <aside
         className={`${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 bg-gray-900 text-white transition-transform duration-300 ease-in-out`}
+        } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 transition-transform duration-300 ease-in-out ${
+          theme === 'dark'
+            ? 'bg-gray-900 text-white'
+            : 'bg-white text-gray-900 border-r border-gray-200'
+        }`}
       >
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-gray-800">
-            <h2 className="text-2xl font-bold text-white">Admin Panel</h2>
-            <p className="text-gray-400 text-sm mt-1">Management System</p>
+          <div className={`p-6 border-b ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'}`}>
+            <h2 className="text-2xl font-bold">Task Management</h2>
+            <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Management System</p>
           </div>
 
           <nav className="flex-1 p-4 space-y-2">
@@ -53,7 +56,9 @@ export default function Sidebar() {
                   className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
                     isActive
                       ? 'bg-blue-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      : theme === 'dark'
+                      ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -63,10 +68,36 @@ export default function Sidebar() {
             })}
           </nav>
 
-          <div className="p-4 border-t border-gray-800">
+          <div className={`p-4 border-t ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'}`}>
+            <button
+              onClick={toggleTheme}
+              className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 w-full mb-3 ${
+                theme === 'dark'
+                  ? 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === 'light' ? (
+                <>
+                  <Moon className="w-5 h-5" />
+                  <span className="font-medium">Dark Mode</span>
+                </>
+              ) : (
+                <>
+                  <Sun className="w-5 h-5" />
+                  <span className="font-medium">Light Mode</span>
+                </>
+              )}
+            </button>
+
             <button
               onClick={handleLogout}
-              className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-red-600 hover:text-white transition-colors duration-200 w-full"
+              className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 w-full ${
+                theme === 'dark'
+                  ? 'text-gray-300 hover:bg-red-600 hover:text-white'
+                  : 'text-gray-700 hover:bg-red-100 hover:text-red-600'
+              }`}
             >
               <LogOut className="w-5 h-5" />
               <span className="font-medium">Logout</span>

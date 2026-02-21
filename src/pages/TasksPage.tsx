@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  Plus, Search, Trash2, CheckCircle, Edit2, X, Sun, Moon,
+  Plus, Search, Trash2, CheckCircle, Edit2, X,
   ChevronUp, ChevronDown, ClipboardList, AlertCircle
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -100,8 +101,9 @@ function StatusBadge({ status, dark }: { status: Status; dark: boolean }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function TasksPage() {
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
   const [tasks, setTasks] = useState<Task[]>(() => loadFromStorage(STORAGE_KEY, []));
-  const [dark, setDark] = useState(() => loadFromStorage(DARK_KEY, false));
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
   const [filter, setFilter] = useState<FilterType>('All');
@@ -153,7 +155,6 @@ export default function TasksPage() {
 
   // ── Persist tasks ──────────────────────────────────────────────────────────
   useEffect(() => { saveToStorage(STORAGE_KEY, tasks); }, [tasks]);
-  useEffect(() => { saveToStorage(DARK_KEY, dark); }, [dark]);
 
   // ── Debounced search ───────────────────────────────────────────────────────
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -251,13 +252,6 @@ export default function TasksPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setDark(d => !d)}
-            className={`p-2 rounded-lg transition-colors ${dark ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400' : 'bg-gray-200 hover:bg-gray-300 text-gray-600'}`}
-            title="Toggle dark mode"
-          >
-            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
           <button
             onClick={() => { setShowForm(f => !f); setFormError(''); }}
             className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
