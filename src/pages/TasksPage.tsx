@@ -282,10 +282,10 @@ export default function TasksPage() {
           {/* ── Stats Bar ── */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             {[
-              { label: 'Total Tasks', value: stats.total, color: 'text-blue-500', bg: dark ? 'bg-blue-900/30' : 'bg-blue-50' },
+              { label: 'Total Tasks', value: stats.total, color: 'text-blue-500', bg: dark ? 'bg-emerald-900/30' : 'bg-blue-50' },
               { label: 'Completed', value: stats.completed, color: 'text-emerald-500', bg: dark ? 'bg-emerald-900/30' : 'bg-emerald-50' },
-              { label: 'Pending', value: stats.pending, color: 'text-orange-500', bg: dark ? 'bg-orange-900/30' : 'bg-orange-50' },
-              { label: 'High Priority', value: stats.high, color: 'text-red-500', bg: dark ? 'bg-red-900/30' : 'bg-red-50' },
+              { label: 'Pending', value: stats.pending, color: 'text-orange-500', bg: dark ? 'bg-emerald-900/30' : 'bg-orange-50' },
+              { label: 'High Priority', value: stats.high, color: 'text-red-500', bg: dark ? 'bg-emerald-900/30' : 'bg-red-50' },
             ].map(s => (
               <div key={s.label} className={`${card} ${s.bg} border rounded-xl p-4 flex flex-col items-center`}>
                 <span className={`text-3xl font-bold ${s.color}`}>{s.value}</span>
