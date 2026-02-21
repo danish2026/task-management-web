@@ -5,7 +5,6 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 type Priority = 'Low' | 'Medium' | 'High';
 type Status = 'Pending' | 'Completed';
@@ -44,7 +43,6 @@ const DARK_KEY = 'task_mgmt_dark';
 
 const emptyForm: FormState = { title: '', description: '', dueDate: '', priority: 'Medium' };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function loadFromStorage<T>(key: string, fallback: T): T {
   try {
@@ -65,7 +63,6 @@ function formatDate(iso: string) {
   return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-// ─── Priority Badge ───────────────────────────────────────────────────────────
 
 function PriorityBadge({ priority, dark }: { priority: Priority; dark: boolean }) {
   const colors: Record<Priority, string> = {
@@ -85,7 +82,6 @@ function PriorityBadge({ priority, dark }: { priority: Priority; dark: boolean }
   );
 }
 
-// ─── Status Badge ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status, dark }: { status: Status; dark: boolean }) {
   const base = status === 'Completed'
@@ -98,7 +94,6 @@ function StatusBadge({ status, dark }: { status: Status; dark: boolean }) {
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function TasksPage() {
   const { theme } = useTheme();
